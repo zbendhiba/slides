@@ -3,6 +3,7 @@
 | Talk | Date | Event |
 |------|------|-------|
 | [L'intégration intelligente : Quand vos flux de données deviennent autonomes](./talk-integration-intelligente-2026-fr) | 2026-05-06 | Meetup Duchess France |
+| [Intelligent Integration: When Your Data Flows Become Autonomous](./talk-intelligent-integration-2026-en) | — | — |
 
 ## Tech
 
