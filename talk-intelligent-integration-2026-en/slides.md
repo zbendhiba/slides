@@ -455,7 +455,7 @@ layoutClass: gap-8
 
 ```mermaid {scale: 0.65}
 graph TD
-    AI[🤖 AI Agent<br>Claude / ChatGPT / ...] -->|MCP| CS[🐪 Camel MCP Server]
+    AI[🤖 AI Agent<br>Claude Code / Codex / ...] -->|MCP| CS[🐪 Camel MCP Server]
     CS --> CAT[📚 Catalog<br>300+ components]
     CS --> DOC[📖 Documentation<br>& examples]
     CS --> VAL[✅ Route<br>validation]
