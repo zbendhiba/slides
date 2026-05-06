@@ -30,11 +30,6 @@ mdc: true
   <span class="text-sm opacity-50">Zineb Bendhiba — 2026</span>
 </div>
 
-<!--
-- Intégration intelligente = flux de données autonomes grâce à l'IA agentique
-- De l'intégration classique vers l'intégration agentique
--->
-
 ---
 transition: fade-out
 layout: two-cols
@@ -70,12 +65,6 @@ class: text-left
   <img src="/images/zineb-square.jpg" class="rounded-2xl w-64 shadow-xl" />
 </div>
 
-<!--
-- Principal SE @ IBM / Red Hat
-- PMC Apache Camel, maintainer Camel Quarkus
-- Contrib : Quarkus, Kaoto, Wanaku, Camel AI
-- Alumna Duchess France — contente d'être ici ce soir
--->
 
 ---
 layout: center
@@ -112,10 +101,8 @@ class: text-center
 </div>
 
 <!--
-- L'intégration ça marche, pas un problème à résoudre
-- Patterns éprouvés depuis 20 ans (EIP)
-- Messaging, transformation, routing, connecteurs
-- Frameworks comme Apache Camel implémentent tout ça
+- L'intégration n'est pas un problème à résoudre — ça marche
+- La question c'est : comment aller plus loin ?
 -->
 
 ---
@@ -157,9 +144,7 @@ graph LR
 </v-click>
 
 <!--
-- Réception → Transformation → Validation → Routage → Livraison → Notification
-- Tout automatisé, prévisible, fiable
-- [click] Jusqu'à l'intervention humaine...
+- [click] Jusqu'à l'intervention humaine — c'est là que ça coince
 -->
 
 ---
@@ -199,9 +184,7 @@ graph LR
 </div>
 
 <!--
-- Bloc rouge = action humaine qui bloque le flux
-- Attente : minutes, heures, parfois jours
-- Souvent un travail répétitif que l'IA sait déjà faire
+- Le bloc rouge c'est l'humain qui casse le flux automatisé
 -->
 
 ---
@@ -256,9 +239,7 @@ class: text-center
 </div>
 
 <!--
-- [clicks] 6 exemples de tâches humaines bloquantes
-- Validation PDF, analyse logs, classification, approbation, extraction, sentiment
-- Toutes cognitives mais répétitives = sweet spot de l'IA
+- Toutes ces tâches sont cognitives mais répétitives = sweet spot de l'IA
 -->
 
 ---
@@ -302,9 +283,6 @@ graph LR
 </div>
 
 <!--
-- Remplacer le goulot humain par un agent IA dans le flux
-- Minutes → secondes, disponible 24/7
-- Cas complexe → escalade humaine
 - L'IA gère le courant, l'humain gère l'exception
 -->
 
@@ -378,10 +356,9 @@ layoutClass: gap-8
 </div>
 
 <!--
-- [click] Avant : 15 min/facture, humain ouvre chaque PDF
-- [click] Après : 5 sec/facture, agent IA dans route Camel
-- [click] L'IA libère l'humain pour les vraies décisions
-- À droite : exemple Camel YAML avec LangChain4j
+- À droite : exemple Camel avec OpenAI structured output (jsonSchema)
+- Le modèle retourne un JSON structuré avec le champ "approved"
+- Pas de parsing de texte libre — décision fiable
 -->
 
 ---
@@ -436,10 +413,7 @@ layout: center
 </div>
 
 <!--
-- 3 étapes : Décrire → Chercher → Générer
-- L'utilisateur parle en langage naturel
-- L'agent explore le catalogue, trouve la bonne combinaison
-- Produit un workflow prêt à exécuter
+- Décrire → Chercher → Générer : 3 étapes, pas de code à écrire
 -->
 
 ---
@@ -573,9 +547,7 @@ layout: default
 </v-click>
 
 <!--
-- Gauche : ce que l'utilisateur voit (formulaire, approbation, email, dashboard)
-- Droite : ce qui tourne vraiment (HTTP, workflow engine, SMTP, REST/DB)
-- [click] Workflows figés, nouvelle intégration = dev custom = semaines
+- [click] Workflows figés = le vrai problème
 -->
 
 ---
@@ -613,8 +585,6 @@ layout: center
 </div>
 
 <!--
-- Agent Configurateur : utilisateur décrit en langage naturel → workflow configuré
-- Agent Développeur : intégration n'existe pas → l'agent la crée
 - Deux niveaux d'autonomie dans un même logiciel
 -->
 
@@ -873,10 +843,7 @@ class: text-center
 </div>
 
 <!--
-- [click] Camel + OpenAI / LangChain4j pour intégrer l'IA dans les workflows
-- [click] Camel MCP Server pour que l'IA crée et valide les routes
-- [click] Kaoto pour le visuel
-- [click] Tout open source
+- Tout est dispo et open source — on peut expérimenter dès maintenant
 -->
 
 ---
@@ -906,7 +873,3 @@ class: text-center
   </span>
 </div>
 
-<!--
-- L'intégration n'est pas morte, elle devient intelligente et autonome
-- Questions ?
--->
