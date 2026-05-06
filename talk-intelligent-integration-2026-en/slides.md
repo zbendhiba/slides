@@ -170,19 +170,19 @@ graph LR
 <div class="grid grid-cols-2 gap-6 mt-8 max-w-3xl mx-auto">
 
 <div class="p-5 rounded-xl bg-red-500/10 border border-red-500/30">
-  <div class="font-bold text-red-400 mb-2">The workflow is blocked</div>
-  <div class="text-sm text-gray-400">Waiting for a human to analyze, validate, decide. Minutes, hours, sometimes days.</div>
+  <div class="font-bold text-red-400">The workflow is blocked</div>
 </div>
 
 <div class="p-5 rounded-xl bg-red-500/10 border border-red-500/30">
-  <div class="font-bold text-red-400 mb-2">The human does repetitive work</div>
-  <div class="text-sm text-gray-400">Analyzing logs, reading PDFs, classifying content... tasks that AI can already do.</div>
+  <div class="font-bold text-red-400">The human does repetitive work</div>
 </div>
 
 </div>
 
 <!--
 - The red block is the human breaking the automated flow
+- The workflow is blocked: waiting for a human to analyze, validate, decide. Minutes, hours, sometimes days.
+- The human does repetitive work: analyzing logs, reading PDFs, classifying content... tasks that AI can already do.
 -->
 
 ---
@@ -199,37 +199,31 @@ class: text-center
 <div class="p-5 rounded-xl bg-purple-500/10 border border-purple-500/30">
   <div class="text-2xl mb-2">📋</div>
   <div class="font-bold text-purple-300">Form validation</div>
-  <div class="text-sm text-gray-400 mt-2">Read a PDF, check the fields, cross-reference with a database</div>
 </div>
 
 <div class="p-5 rounded-xl bg-cyan-500/10 border border-cyan-500/30">
   <div class="text-2xl mb-2">🔍</div>
   <div class="font-bold text-cyan-300">Log analysis</div>
-  <div class="text-sm text-gray-400 mt-2">Detect anomalies, classify errors, decide on the action</div>
 </div>
 
 <div class="p-5 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
   <div class="text-2xl mb-2">📄</div>
   <div class="font-bold text-emerald-300">Content classification</div>
-  <div class="text-sm text-gray-400 mt-2">Sort emails, categorize tickets, route by topic</div>
 </div>
 
 <div class="p-5 rounded-xl bg-amber-500/10 border border-amber-500/30">
   <div class="text-2xl mb-2">✅</div>
   <div class="font-bold text-amber-300">Data approval</div>
-  <div class="text-sm text-gray-400 mt-2">Check consistency, validate compliance, give the green light</div>
 </div>
 
 <div class="p-5 rounded-xl bg-rose-500/10 border border-rose-500/30">
   <div class="text-2xl mb-2">🧾</div>
   <div class="font-bold text-rose-300">Information extraction</div>
-  <div class="text-sm text-gray-400 mt-2">Read invoices, extract amounts, structure free-form data</div>
 </div>
 
 <div class="p-5 rounded-xl bg-indigo-500/10 border border-indigo-500/30">
   <div class="text-2xl mb-2">💬</div>
   <div class="font-bold text-indigo-300">Sentiment analysis</div>
-  <div class="text-sm text-gray-400 mt-2">Assess the tone of a customer message, prioritize urgencies</div>
 </div>
 
 </v-clicks>
@@ -238,6 +232,12 @@ class: text-center
 
 <!--
 - All these tasks are cognitive but repetitive = AI's sweet spot
+- Form validation: read a PDF, check the fields, cross-reference with a database
+- Log analysis: detect anomalies, classify errors, decide on the action
+- Content classification: sort emails, categorize tickets, route by topic
+- Data approval: check consistency, validate compliance, give the green light
+- Information extraction: read invoices, extract amounts, structure free-form data
+- Sentiment analysis: assess the tone of a customer message, prioritize urgencies
 -->
 
 ---
@@ -291,18 +291,18 @@ layoutClass: gap-8
 
 # Concrete example
 
-**Invoice PDF validation**
+**Support ticket analysis**
 
 <div class="mt-4 text-sm space-y-3">
 
 <v-clicks>
 
 <div class="p-3 rounded-lg bg-red-500/10 border border-red-500/20">
-  <span class="text-red-400 font-bold">Before:</span> An employee opens each PDF, checks amounts, compares with the purchase order, approves or rejects. <span class="text-red-400">~15 min/invoice</span>
+  <span class="text-red-400 font-bold">Before:</span> A support agent reads each ticket, assesses urgency, identifies the topic, and routes to the right team. <span class="text-red-400">~10 min/ticket</span>
 </div>
 
 <div class="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-  <span class="text-emerald-400 font-bold">After:</span> An AI agent in the workflow reads the PDF, extracts data, cross-references with the database, and decides. Humans only intervene on edge cases. <span class="text-emerald-400">~5 sec/invoice</span>
+  <span class="text-emerald-400 font-bold">After:</span> An AI agent understands the free text, detects sentiment, classifies severity, and routes automatically. Humans handle ambiguous cases. <span class="text-emerald-400">~3 sec/ticket</span>
 </div>
 
 </v-clicks>
@@ -319,44 +319,49 @@ layoutClass: gap-8
 
 ::right::
 
+<v-click at="2">
+
 <div class="mt-12">
 
 ```yaml
 # Camel route + OpenAI structured output
 - route:
     from:
-      uri: file:invoices/incoming
+      uri: jira:newTickets
       steps:
         - setBody:
-            simple: "Analyze this invoice.
-              Check amount, VAT,
-              purchase order match."
+            simple: "Analyze this support ticket.
+              Classify severity (P1-P4),
+              identify the topic,
+              detect customer sentiment."
         - to:
             uri: openai:chat-completion
             parameters:
               jsonSchema: >
                 resource:classpath:
-                invoice-decision.schema.json
-        - setVariable:
-            name: decision
-            jsonpath:
-              expression: $.approved
+                ticket-triage.schema.json
         - choice:
             when:
-              - simple: "${variable.decision}"
+              - jsonpath: $[?(@.severity == 'P1')]
                 steps:
-                  - to: sql:insert-approved
+                  - to: slack:urgent-support
+              - jsonpath: $[?(@.severity == 'P2')]
+                steps:
+                  - to: jira:team-backend
             otherwise:
               steps:
-                - to: slack:finance-review
+                - to: jira:team-general
 ```
 
 </div>
 
+</v-click>
+
 <!--
 - Right side: Camel example with OpenAI structured output (jsonSchema)
-- The model returns structured JSON with the "approved" field
-- No free-text parsing — reliable decision
+- The model returns structured JSON with severity, topic, sentiment
+- No free-text parsing — reliable and automatic triage
+- This is a real AI use case: understanding free text, not rule matching
 -->
 
 ---
@@ -391,19 +396,16 @@ layout: center
 <div class="p-5 rounded-2xl bg-purple-500/10 border border-purple-500/30">
   <div class="text-3xl mb-3">💬</div>
   <div class="font-bold text-purple-300 mb-2">Describe</div>
-  <div class="text-sm text-gray-400">The user expresses their need in natural language</div>
 </div>
 
 <div class="p-5 rounded-2xl bg-cyan-500/10 border border-cyan-500/30">
   <div class="text-3xl mb-3">🔍</div>
   <div class="font-bold text-cyan-300 mb-2">Search</div>
-  <div class="text-sm text-gray-400">The agent explores the component catalog and finds the right combination</div>
 </div>
 
 <div class="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30">
   <div class="text-3xl mb-3">⚡</div>
   <div class="font-bold text-emerald-300 mb-2">Generate</div>
-  <div class="text-sm text-gray-400">The agent produces the integration workflow, ready to run</div>
 </div>
 
 </v-clicks>
@@ -412,6 +414,9 @@ layout: center
 
 <!--
 - Describe → Search → Generate: 3 steps, no code to write
+- Describe: the user expresses their need in natural language
+- Search: the agent explores the component catalog and finds the right combination
+- Generate: the agent produces the integration workflow, ready to run
 -->
 
 ---
@@ -426,23 +431,23 @@ layoutClass: gap-8
 <v-clicks>
 
 <div class="p-2 rounded-lg bg-purple-500/10 border border-purple-500/20">
-  The agent queries the catalog: <span class="text-purple-300">"Which components can read emails?"</span>
+  <span class="text-purple-300 font-bold">Queries</span> the catalog
 </div>
 
 <div class="p-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
-  Returns components, options, and examples
+  <span class="text-cyan-300 font-bold">Returns</span> components, options, examples
 </div>
 
 <div class="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-  Generates a valid Camel route
+  <span class="text-emerald-300 font-bold">Generates</span> a valid Camel route
 </div>
 
 <div class="p-2 rounded-lg bg-purple-500/10 border border-purple-500/20">
-  <span class="text-purple-300">Validates the routes</span> before execution
+  <span class="text-purple-300 font-bold">Validates</span> routes before execution
 </div>
 
-<div class="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs">
-  Compatible: Claude Code, OpenAI Codex, GitHub Copilot, JetBrains AI, or any MCP client
+<div class="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
+  <span class="text-amber-300 font-bold">Compatible</span> with any MCP client
 </div>
 
 </v-clicks>
@@ -473,11 +478,11 @@ graph TD
 
 <!--
 - MCP Server exposes the Apache Camel catalog (300+ components)
-- [click] Queries the catalog in natural language
-- [click] Returns components, options, examples
-- [click] Generates a valid route
-- [click] Validates the route before execution — no blind trust
-- [click] Compatible with Claude Code, Codex, Copilot, JetBrains AI, any MCP client
+- [click] Queries the catalog in natural language: "Which components can read emails?"
+- [click] Returns the components, options and usage examples
+- [click] Generates a valid YAML route from the response
+- [click] Validates the route before execution — no blind trust in the LLM
+- [click] Compatible: Claude Code, OpenAI Codex, GitHub Copilot, JetBrains AI, or any MCP client
 -->
 
 ---
@@ -563,76 +568,19 @@ layout: center
 <div class="p-6 rounded-2xl bg-gradient-to-b from-purple-500/20 to-transparent border border-purple-500/30">
   <div class="text-3xl mb-3">🛠️</div>
   <div class="text-lg font-bold text-purple-300 mb-3">Configurator Agent</div>
-  <div class="text-sm text-gray-400 space-y-2">
-    <div>The user describes their need in natural language</div>
-    <div class="text-purple-300">"When a customer signs up, send a welcome email and create a Jira ticket"</div>
-    <div>The agent generates and configures the integration workflow</div>
-  </div>
 </div>
 
 <div class="p-6 rounded-2xl bg-gradient-to-b from-cyan-500/20 to-transparent border border-cyan-500/30">
   <div class="text-3xl mb-3">🧠</div>
   <div class="text-lg font-bold text-cyan-300 mb-3">Developer Agent</div>
-  <div class="text-sm text-gray-400 space-y-2">
-    <div>The requested integration doesn't exist yet?</div>
-    <div class="text-cyan-300">The agent develops the connector, tests it, and adds it to the software</div>
-    <div>Autonomous creation of new integrations</div>
-  </div>
 </div>
 
 </div>
 
 <!--
 - Two levels of autonomy within the same software
--->
-
----
-layout: two-cols
-layoutClass: gap-8
----
-
-# From "dev only" to "user empowered"
-
-<div class="mt-4">
-
-### The classic path
-
-<div class="mt-4 space-y-2 text-sm">
-  <div class="p-2 rounded bg-red-500/10 text-red-300">1. User requests a Salesforce integration</div>
-  <div class="p-2 rounded bg-red-500/10 text-red-300">2. Ticket created → dev backlog</div>
-  <div class="p-2 rounded bg-red-500/10 text-red-300">3. A developer codes the connector</div>
-  <div class="p-2 rounded bg-red-500/10 text-red-300">4. Tests, review, deployment</div>
-  <div class="p-2 rounded bg-red-500/10 text-red-300">5. 3 weeks later... ✅</div>
-</div>
-
-</div>
-
-::right::
-
-<div class="mt-4">
-
-### The AI + MCP path
-
-<div class="mt-4 space-y-2 text-sm">
-
-<v-clicks>
-
-  <div class="p-2 rounded bg-emerald-500/10 text-emerald-300">1. User describes their need</div>
-  <div class="p-2 rounded bg-emerald-500/10 text-emerald-300">2. AI agent identifies the required connector</div>
-  <div class="p-2 rounded bg-emerald-500/10 text-emerald-300">3. Via MCP, it configures the integration</div>
-  <div class="p-2 rounded bg-emerald-500/10 text-emerald-300">4. User validates and activates</div>
-  <div class="p-2 rounded bg-emerald-500/10 text-emerald-300">5. A few minutes later... ✅</div>
-
-</v-clicks>
-
-</div>
-
-</div>
-
-<!--
-- Left: classic = ticket, backlog, dev, 3 weeks
-- [clicks] Right: AI + MCP = describe, identify, configure, validate, a few minutes
-- Paradigm shift
+- Configurator Agent: the user describes their need in natural language, e.g. "When a customer signs up, send a welcome email and create a Jira ticket". The agent generates and configures the workflow.
+- Developer Agent: the requested integration doesn't exist yet? The agent develops the connector, tests it, and adds it to the software. Autonomous creation of new integrations.
 -->
 
 ---
@@ -735,36 +683,27 @@ class: text-center
 <div class="p-6 rounded-2xl bg-gradient-to-b from-purple-500/20 to-transparent border border-purple-500/30 text-center">
   <div class="text-4xl mb-4">🔧</div>
   <div class="text-lg font-bold text-purple-300">Level 1</div>
-  <div class="text-sm font-bold text-purple-200 mt-1 mb-3">Assisted</div>
-  <div class="text-sm text-gray-400">
-    AI helps the developer create routes and configure connectors
-  </div>
+  <div class="text-sm font-bold text-purple-200 mt-1">Assisted</div>
 </div>
 
 <div class="p-6 rounded-2xl bg-gradient-to-b from-cyan-500/20 to-transparent border border-cyan-500/30 text-center">
   <div class="text-4xl mb-4">🤖</div>
   <div class="text-lg font-bold text-cyan-300">Level 2</div>
-  <div class="text-sm font-bold text-cyan-200 mt-1 mb-3">Delegated</div>
-  <div class="text-sm text-gray-400">
-    AI agents replace human tasks in existing workflows
-  </div>
+  <div class="text-sm font-bold text-cyan-200 mt-1">Delegated</div>
 </div>
 
 <div class="p-6 rounded-2xl bg-gradient-to-b from-emerald-500/20 to-transparent border border-emerald-500/30 text-center">
   <div class="text-4xl mb-4">🧠</div>
   <div class="text-lg font-bold text-emerald-300">Level 3</div>
-  <div class="text-sm font-bold text-emerald-200 mt-1 mb-3">Autonomous</div>
-  <div class="text-sm text-gray-400">
-    AI creates and extends integrations autonomously via MCP
-  </div>
+  <div class="text-sm font-bold text-emerald-200 mt-1">Autonomous</div>
 </div>
 
 </div>
 
 <!--
-- Level 1 Assisted: AI helps the dev (Camel MCP Server, available today)
-- Level 2 Delegated: AI replaces human tasks in existing workflows
-- Level 3 Autonomous: AI creates and extends integrations via MCP
+- Level 1 Assisted: AI helps the developer create routes and configure connectors (Camel MCP Server, available today)
+- Level 2 Delegated: AI agents replace human tasks in existing workflows
+- Level 3 Autonomous: AI creates and extends integrations autonomously via MCP
 - We're moving from 1 to 2, level 3 is the direction
 -->
 
@@ -777,32 +716,28 @@ layout: center
 <div class="grid grid-cols-2 gap-6 mt-8 max-w-3xl mx-auto">
 
 <div class="p-5 rounded-xl bg-amber-500/10 border border-amber-500/30">
-  <div class="font-bold text-amber-300 mb-2">🔒 Security & Governance</div>
-  <div class="text-sm text-gray-400">Who authorizes the agent to connect to a system? Audit trail, permissions, data isolation.</div>
+  <div class="font-bold text-amber-300">🔒 Security & Governance</div>
 </div>
 
 <div class="p-5 rounded-xl bg-amber-500/10 border border-amber-500/30">
-  <div class="font-bold text-amber-300 mb-2">🎯 Context engineering</div>
-  <div class="text-sm text-gray-400">Quality depends less on the prompt and more on the information architecture around the agent: MCP descriptions, accessible data, business context.</div>
+  <div class="font-bold text-amber-300">🎯 Context engineering</div>
 </div>
 
 <div class="p-5 rounded-xl bg-amber-500/10 border border-amber-500/30">
-  <div class="font-bold text-amber-300 mb-2">🤝 Human in the loop</div>
-  <div class="text-sm text-gray-400">Autonomy yes, but with oversight. Humans validate critical cases and new connectors.</div>
+  <div class="font-bold text-amber-300">🤝 Human in the loop</div>
 </div>
 
 <div class="p-5 rounded-xl bg-amber-500/10 border border-amber-500/30">
-  <div class="font-bold text-amber-300 mb-2">📏 Standardization</div>
-  <div class="text-sm text-gray-400">MCP has been under the Linux Foundation since late 2025. The protocol is maturing fast, but agentic integration patterns still need to stabilize.</div>
+  <div class="font-bold text-amber-300">📏 Standardization</div>
 </div>
 
 </div>
 
 <!--
-- Security: who authorizes the agent to connect to a prod system?
-- Context engineering: quality depends on info architecture, not just the prompt
-- Human in the loop: autonomy with oversight
-- MCP under Linux Foundation, but agentic patterns still being defined
+- Security & Governance: who authorizes the agent to connect to a system? Audit trail, permissions, data isolation
+- Context engineering: quality depends less on the prompt and more on the information architecture around the agent — MCP descriptions, accessible data, business context
+- Human in the loop: autonomy yes, but with oversight. Humans validate critical cases and new connectors
+- Standardization: MCP has been under the Agentic AI Foundation since late 2025. The protocol is maturing fast, but agentic integration patterns still need to stabilize
 -->
 
 ---

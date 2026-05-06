@@ -172,19 +172,19 @@ graph LR
 <div class="grid grid-cols-2 gap-6 mt-8 max-w-3xl mx-auto">
 
 <div class="p-5 rounded-xl bg-red-500/10 border border-red-500/30">
-  <div class="font-bold text-red-400 mb-2">Le workflow est bloqué</div>
-  <div class="text-sm text-gray-400">En attente qu'un humain analyse, valide, décide. Minutes, heures, parfois jours.</div>
+  <div class="font-bold text-red-400">Le workflow est bloqué</div>
 </div>
 
 <div class="p-5 rounded-xl bg-red-500/10 border border-red-500/30">
-  <div class="font-bold text-red-400 mb-2">L'humain fait un travail répétitif</div>
-  <div class="text-sm text-gray-400">Analyser des logs, lire des PDF, classifier du contenu... tâches que l'IA sait déjà faire.</div>
+  <div class="font-bold text-red-400">L'humain fait un travail répétitif</div>
 </div>
 
 </div>
 
 <!--
 - Le bloc rouge c'est l'humain qui casse le flux automatisé
+- Le workflow est bloqué : en attente qu'un humain analyse, valide, décide. Minutes, heures, parfois jours.
+- L'humain fait un travail répétitif : analyser des logs, lire des PDF, classifier du contenu... tâches que l'IA sait déjà faire.
 -->
 
 ---
@@ -201,37 +201,31 @@ class: text-center
 <div class="p-5 rounded-xl bg-purple-500/10 border border-purple-500/30">
   <div class="text-2xl mb-2">📋</div>
   <div class="font-bold text-purple-300">Validation de formulaires</div>
-  <div class="text-sm text-gray-400 mt-2">Lire un PDF, vérifier les champs, croiser avec une base de données</div>
 </div>
 
 <div class="p-5 rounded-xl bg-cyan-500/10 border border-cyan-500/30">
   <div class="text-2xl mb-2">🔍</div>
   <div class="font-bold text-cyan-300">Analyse de logs</div>
-  <div class="text-sm text-gray-400 mt-2">Détecter une anomalie, classifier l'erreur, décider de l'action</div>
 </div>
 
 <div class="p-5 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
   <div class="text-2xl mb-2">📄</div>
   <div class="font-bold text-emerald-300">Classification de contenu</div>
-  <div class="text-sm text-gray-400 mt-2">Trier des emails, catégoriser des tickets, router selon le sujet</div>
 </div>
 
 <div class="p-5 rounded-xl bg-amber-500/10 border border-amber-500/30">
   <div class="text-2xl mb-2">✅</div>
   <div class="font-bold text-amber-300">Approbation de données</div>
-  <div class="text-sm text-gray-400 mt-2">Vérifier la cohérence, valider la conformité, donner le feu vert</div>
 </div>
 
 <div class="p-5 rounded-xl bg-rose-500/10 border border-rose-500/30">
   <div class="text-2xl mb-2">🧾</div>
   <div class="font-bold text-rose-300">Extraction d'information</div>
-  <div class="text-sm text-gray-400 mt-2">Lire des factures, extraire des montants, structurer des données libres</div>
 </div>
 
 <div class="p-5 rounded-xl bg-indigo-500/10 border border-indigo-500/30">
   <div class="text-2xl mb-2">💬</div>
   <div class="font-bold text-indigo-300">Analyse de sentiment</div>
-  <div class="text-sm text-gray-400 mt-2">Évaluer le ton d'un message client, prioriser les urgences</div>
 </div>
 
 </v-clicks>
@@ -240,6 +234,12 @@ class: text-center
 
 <!--
 - Toutes ces tâches sont cognitives mais répétitives = sweet spot de l'IA
+- Validation de formulaires : lire un PDF, vérifier les champs, croiser avec une BDD
+- Analyse de logs : détecter une anomalie, classifier l'erreur, décider de l'action
+- Classification de contenu : trier des emails, catégoriser des tickets, router selon le sujet
+- Approbation de données : vérifier la cohérence, valider la conformité, donner le feu vert
+- Extraction d'information : lire des factures, extraire des montants, structurer des données libres
+- Analyse de sentiment : évaluer le ton d'un message client, prioriser les urgences
 -->
 
 ---
@@ -293,18 +293,18 @@ layoutClass: gap-8
 
 # Exemple concret
 
-**Validation de factures PDF**
+**Analyse de tickets support**
 
 <div class="mt-4 text-sm space-y-3">
 
 <v-clicks>
 
 <div class="p-3 rounded-lg bg-red-500/10 border border-red-500/20">
-  <span class="text-red-400 font-bold">Avant :</span> Un employé ouvre chaque PDF, vérifie les montants, compare avec le bon de commande, approuve ou rejette. <span class="text-red-400">~15 min/facture</span>
+  <span class="text-red-400 font-bold">Avant :</span> Un agent support lit chaque ticket, évalue l'urgence, identifie le sujet, et route vers la bonne équipe. <span class="text-red-400">~10 min/ticket</span>
 </div>
 
 <div class="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-  <span class="text-emerald-400 font-bold">Après :</span> Un agent IA dans le workflow lit le PDF, extrait les données, croise avec la base, et décide. L'humain n'intervient que sur les cas litigieux. <span class="text-emerald-400">~5 sec/facture</span>
+  <span class="text-emerald-400 font-bold">Après :</span> Un agent IA comprend le texte libre, détecte le sentiment, classifie la sévérité et route automatiquement. L'humain gère les cas ambigus. <span class="text-emerald-400">~3 sec/ticket</span>
 </div>
 
 </v-clicks>
@@ -321,44 +321,49 @@ layoutClass: gap-8
 
 ::right::
 
+<v-click at="2">
+
 <div class="mt-12">
 
 ```yaml
 # Route Camel + OpenAI structured output
 - route:
     from:
-      uri: file:invoices/incoming
+      uri: jira:newTickets
       steps:
         - setBody:
-            simple: "Analyse cette facture.
-              Vérifie montant, TVA,
-              correspondance bon de commande."
+            simple: "Analyse ce ticket support.
+              Classifie la sévérité (P1-P4),
+              identifie le sujet,
+              détecte le sentiment client."
         - to:
             uri: openai:chat-completion
             parameters:
               jsonSchema: >
                 resource:classpath:
-                invoice-decision.schema.json
-        - setVariable:
-            name: decision
-            jsonpath:
-              expression: $.approved
+                ticket-triage.schema.json
         - choice:
             when:
-              - simple: "${variable.decision}"
+              - jsonpath: $[?(@.severity == 'P1')]
                 steps:
-                  - to: sql:insert-approved
+                  - to: slack:urgent-support
+              - jsonpath: $[?(@.severity == 'P2')]
+                steps:
+                  - to: jira:team-backend
             otherwise:
               steps:
-                - to: slack:finance-review
+                - to: jira:team-general
 ```
 
 </div>
 
+</v-click>
+
 <!--
 - À droite : exemple Camel avec OpenAI structured output (jsonSchema)
-- Le modèle retourne un JSON structuré avec le champ "approved"
-- Pas de parsing de texte libre — décision fiable
+- Le modèle retourne un JSON structuré avec sévérité, sujet, sentiment
+- Pas de parsing de texte libre — triage fiable et automatique
+- C'est un vrai cas d'usage IA : comprendre du texte libre, pas du matching de règles
 -->
 
 ---
@@ -393,19 +398,16 @@ layout: center
 <div class="p-5 rounded-2xl bg-purple-500/10 border border-purple-500/30">
   <div class="text-3xl mb-3">💬</div>
   <div class="font-bold text-purple-300 mb-2">Décrire</div>
-  <div class="text-sm text-gray-400">L'utilisateur exprime son besoin en langage naturel</div>
 </div>
 
 <div class="p-5 rounded-2xl bg-cyan-500/10 border border-cyan-500/30">
   <div class="text-3xl mb-3">🔍</div>
   <div class="font-bold text-cyan-300 mb-2">Chercher</div>
-  <div class="text-sm text-gray-400">L'agent explore le catalogue de composants et trouve la bonne combinaison</div>
 </div>
 
 <div class="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30">
   <div class="text-3xl mb-3">⚡</div>
   <div class="font-bold text-emerald-300 mb-2">Générer</div>
-  <div class="text-sm text-gray-400">L'agent produit le workflow d'intégration, prêt à exécuter</div>
 </div>
 
 </v-clicks>
@@ -414,6 +416,9 @@ layout: center
 
 <!--
 - Décrire → Chercher → Générer : 3 étapes, pas de code à écrire
+- Décrire : l'utilisateur exprime son besoin en langage naturel
+- Chercher : l'agent explore le catalogue de composants et trouve la bonne combinaison
+- Générer : l'agent produit le workflow d'intégration, prêt à exécuter
 -->
 
 ---
@@ -428,23 +433,23 @@ layoutClass: gap-8
 <v-clicks>
 
 <div class="p-2 rounded-lg bg-purple-500/10 border border-purple-500/20">
-  L'agent interroge le catalogue : <span class="text-purple-300">"Quels composants pour lire des emails ?"</span>
+  <span class="text-purple-300 font-bold">Interroge</span> le catalogue
 </div>
 
 <div class="p-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
-  Retourne les composants, options et exemples
+  <span class="text-cyan-300 font-bold">Retourne</span> composants, options, exemples
 </div>
 
 <div class="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-  Génère une route Camel valide
+  <span class="text-emerald-300 font-bold">Génère</span> une route Camel valide
 </div>
 
 <div class="p-2 rounded-lg bg-purple-500/10 border border-purple-500/20">
-  <span class="text-purple-300">Valide les routes</span> générées avant exécution
+  <span class="text-purple-300 font-bold">Valide</span> les routes avant exécution
 </div>
 
-<div class="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs">
-  Compatible : Claude Code, OpenAI Codex, GitHub Copilot, JetBrains AI, ou tout client MCP
+<div class="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
+  <span class="text-amber-300 font-bold">Compatible</span> tout client MCP
 </div>
 
 </v-clicks>
@@ -475,11 +480,11 @@ graph TD
 
 <!--
 - MCP Server expose le catalogue Apache Camel (300+ composants)
-- [click] Interroge le catalogue en langage naturel
-- [click] Retourne composants, options, exemples
-- [click] Génère une route YAML valide
-- [click] Valide la route avant exécution — pas confiance aveugle
-- [click] Compatible Claude Code, Codex, Copilot, JetBrains AI, tout client MCP
+- [click] Interroge le catalogue en langage naturel : "Quels composants pour lire des emails ?"
+- [click] Retourne les composants, options et exemples d'utilisation
+- [click] Génère une route YAML valide à partir de la réponse
+- [click] Valide la route avant exécution — pas confiance aveugle au LLM
+- [click] Compatible : Claude Code, OpenAI Codex, GitHub Copilot, JetBrains AI, ou tout client MCP
 -->
 
 ---
@@ -565,76 +570,19 @@ layout: center
 <div class="p-6 rounded-2xl bg-gradient-to-b from-purple-500/20 to-transparent border border-purple-500/30">
   <div class="text-3xl mb-3">🛠️</div>
   <div class="text-lg font-bold text-purple-300 mb-3">Agent Configurateur</div>
-  <div class="text-sm text-gray-400 space-y-2">
-    <div>L'utilisateur décrit son besoin en langage naturel</div>
-    <div class="text-purple-300">"Quand un client s'inscrit, envoie un email de bienvenue et crée un ticket Jira"</div>
-    <div>L'agent génère et configure le workflow d'intégration</div>
-  </div>
 </div>
 
 <div class="p-6 rounded-2xl bg-gradient-to-b from-cyan-500/20 to-transparent border border-cyan-500/30">
   <div class="text-3xl mb-3">🧠</div>
   <div class="text-lg font-bold text-cyan-300 mb-3">Agent Développeur</div>
-  <div class="text-sm text-gray-400 space-y-2">
-    <div>L'intégration demandée n'existe pas encore ?</div>
-    <div class="text-cyan-300">L'agent développe le connecteur, le teste, et l'ajoute au logiciel</div>
-    <div>Création autonome de nouvelles intégrations</div>
-  </div>
 </div>
 
 </div>
 
 <!--
 - Deux niveaux d'autonomie dans un même logiciel
--->
-
----
-layout: two-cols
-layoutClass: gap-8
----
-
-# Du "dev only" au "user empowered"
-
-<div class="mt-4">
-
-### Le parcours classique
-
-<div class="mt-4 space-y-2 text-sm">
-  <div class="p-2 rounded bg-red-500/10 text-red-300">1. L'utilisateur demande une intégration Salesforce</div>
-  <div class="p-2 rounded bg-red-500/10 text-red-300">2. Ticket créé → backlog dev</div>
-  <div class="p-2 rounded bg-red-500/10 text-red-300">3. Un développeur code le connecteur</div>
-  <div class="p-2 rounded bg-red-500/10 text-red-300">4. Tests, review, déploiement</div>
-  <div class="p-2 rounded bg-red-500/10 text-red-300">5. 3 semaines plus tard... ✅</div>
-</div>
-
-</div>
-
-::right::
-
-<div class="mt-4">
-
-### Le parcours avec IA + MCP
-
-<div class="mt-4 space-y-2 text-sm">
-
-<v-clicks>
-
-  <div class="p-2 rounded bg-emerald-500/10 text-emerald-300">1. L'utilisateur décrit son besoin</div>
-  <div class="p-2 rounded bg-emerald-500/10 text-emerald-300">2. L'agent IA identifie le connecteur nécessaire</div>
-  <div class="p-2 rounded bg-emerald-500/10 text-emerald-300">3. Via MCP, il configure l'intégration</div>
-  <div class="p-2 rounded bg-emerald-500/10 text-emerald-300">4. L'utilisateur valide et active</div>
-  <div class="p-2 rounded bg-emerald-500/10 text-emerald-300">5. Quelques minutes plus tard... ✅</div>
-
-</v-clicks>
-
-</div>
-
-</div>
-
-<!--
-- Gauche : classique = ticket, backlog, dev, 3 semaines
-- [clicks] Droite : IA + MCP = décrit, identifie, configure, valide, quelques minutes
-- Changement de paradigme
+- Agent Configurateur : l'utilisateur décrit son besoin en langage naturel, ex: "Quand un client s'inscrit, envoie un email de bienvenue et crée un ticket Jira". L'agent génère et configure le workflow.
+- Agent Développeur : l'intégration demandée n'existe pas encore ? L'agent développe le connecteur, le teste, et l'ajoute au logiciel. Création autonome de nouvelles intégrations.
 -->
 
 ---
@@ -737,36 +685,27 @@ class: text-center
 <div class="p-6 rounded-2xl bg-gradient-to-b from-purple-500/20 to-transparent border border-purple-500/30 text-center">
   <div class="text-4xl mb-4">🔧</div>
   <div class="text-lg font-bold text-purple-300">Niveau 1</div>
-  <div class="text-sm font-bold text-purple-200 mt-1 mb-3">Assisté</div>
-  <div class="text-sm text-gray-400">
-    L'IA aide le développeur à créer des routes et configurer des connecteurs
-  </div>
+  <div class="text-sm font-bold text-purple-200 mt-1">Assisté</div>
 </div>
 
 <div class="p-6 rounded-2xl bg-gradient-to-b from-cyan-500/20 to-transparent border border-cyan-500/30 text-center">
   <div class="text-4xl mb-4">🤖</div>
   <div class="text-lg font-bold text-cyan-300">Niveau 2</div>
-  <div class="text-sm font-bold text-cyan-200 mt-1 mb-3">Délégué</div>
-  <div class="text-sm text-gray-400">
-    Les agents IA remplacent les tâches humaines dans les workflows existants
-  </div>
+  <div class="text-sm font-bold text-cyan-200 mt-1">Délégué</div>
 </div>
 
 <div class="p-6 rounded-2xl bg-gradient-to-b from-emerald-500/20 to-transparent border border-emerald-500/30 text-center">
   <div class="text-4xl mb-4">🧠</div>
   <div class="text-lg font-bold text-emerald-300">Niveau 3</div>
-  <div class="text-sm font-bold text-emerald-200 mt-1 mb-3">Autonome</div>
-  <div class="text-sm text-gray-400">
-    L'IA crée et étend les intégrations de manière autonome via MCP
-  </div>
+  <div class="text-sm font-bold text-emerald-200 mt-1">Autonome</div>
 </div>
 
 </div>
 
 <!--
-- Niveau 1 Assisté : IA aide le dev (Camel MCP Server, dispo aujourd'hui)
-- Niveau 2 Délégué : IA remplace tâches humaines dans workflows existants
-- Niveau 3 Autonome : IA crée et étend les intégrations via MCP
+- Niveau 1 Assisté : l'IA aide le développeur à créer des routes et configurer des connecteurs (Camel MCP Server, dispo aujourd'hui)
+- Niveau 2 Délégué : les agents IA remplacent les tâches humaines dans les workflows existants
+- Niveau 3 Autonome : l'IA crée et étend les intégrations de manière autonome via MCP
 - On passe du 1 au 2, le 3 c'est la direction
 -->
 
@@ -779,32 +718,28 @@ layout: center
 <div class="grid grid-cols-2 gap-6 mt-8 max-w-3xl mx-auto">
 
 <div class="p-5 rounded-xl bg-amber-500/10 border border-amber-500/30">
-  <div class="font-bold text-amber-300 mb-2">🔒 Sécurité & Gouvernance</div>
-  <div class="text-sm text-gray-400">Qui autorise l'agent à connecter un système ? Audit trail, permissions, isolation des données.</div>
+  <div class="font-bold text-amber-300">🔒 Sécurité & Gouvernance</div>
 </div>
 
 <div class="p-5 rounded-xl bg-amber-500/10 border border-amber-500/30">
-  <div class="font-bold text-amber-300 mb-2">🎯 Context engineering</div>
-  <div class="text-sm text-gray-400">La qualité dépend moins du prompt que de l'architecture d'information autour de l'agent : descriptions MCP, données accessibles, contexte métier.</div>
+  <div class="font-bold text-amber-300">🎯 Context engineering</div>
 </div>
 
 <div class="p-5 rounded-xl bg-amber-500/10 border border-amber-500/30">
-  <div class="font-bold text-amber-300 mb-2">🤝 Human in the loop</div>
-  <div class="text-sm text-gray-400">L'autonomie oui, mais avec supervision. L'humain valide les cas critiques et les nouveaux connecteurs.</div>
+  <div class="font-bold text-amber-300">🤝 Human in the loop</div>
 </div>
 
 <div class="p-5 rounded-xl bg-amber-500/10 border border-amber-500/30">
-  <div class="font-bold text-amber-300 mb-2">📏 Standardisation</div>
-  <div class="text-sm text-gray-400">MCP est sous la Linux Foundation depuis fin 2025. Le protocole mûrit vite, mais les patterns d'intégration agentique restent à stabiliser.</div>
+  <div class="font-bold text-amber-300">📏 Standardisation</div>
 </div>
 
 </div>
 
 <!--
-- Sécurité : qui autorise l'agent à connecter un système prod ?
-- Context engineering : la qualité dépend de l'architecture d'info, pas juste du prompt
-- Human in the loop : autonomie avec supervision
-- MCP sous Linux Foundation, mais patterns agentiques encore en construction
+- Sécurité & Gouvernance : qui autorise l'agent à connecter un système ? Audit trail, permissions, isolation des données
+- Context engineering : la qualité dépend moins du prompt que de l'architecture d'information autour de l'agent — descriptions MCP, données accessibles, contexte métier
+- Human in the loop : l'autonomie oui, mais avec supervision. L'humain valide les cas critiques et les nouveaux connecteurs
+- Standardisation : MCP est sous la Agentic AI Foundation depuis fin 2025. Le protocole mûrit vite, mais les patterns d'intégration agentique restent à stabiliser
 -->
 
 ---
