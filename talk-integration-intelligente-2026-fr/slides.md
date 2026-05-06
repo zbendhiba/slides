@@ -91,12 +91,12 @@ class: text-center
   </div>
   <div class="p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/30">
     <div class="text-3xl mb-2">🔗</div>
-    <div class="text-sm">300+ connecteurs</div>
+    <div class="text-sm">Connecteurs</div>
   </div>
 </div>
 
 <div class="mt-8 text-sm text-gray-500">
-  Enterprise Integration Patterns — Apache Camel — Quarkus — Kafka — ...
+  Enterprise Integration Patterns — Apache Camel — ...
 </div>
 
 ---
@@ -107,18 +107,20 @@ layout: default
 
 <div class="mt-6">
 
-```mermaid {scale: 0.85}
+```mermaid {scale: 0.65}
 graph LR
     A[📥 Réception<br>email / API / fichier] --> B[🔄 Transformation<br>mapping, format]
     B --> C[✅ Validation<br>règles métier]
     C --> D[🛣️ Routage<br>conditions]
     D --> E[📤 Livraison<br>DB / API / queue]
+    E --> F[🔔 Notification<br>email / alert]
     
     style A fill:#4a1a6b,stroke:#8b5cf6,color:#fff
     style B fill:#3b1a5b,stroke:#8b5cf6,color:#fff
     style C fill:#1a3a5b,stroke:#06b6d4,color:#fff
     style D fill:#0a4a5b,stroke:#06b6d4,color:#fff
     style E fill:#064a4b,stroke:#22d3ee,color:#fff
+    style F fill:#064a4b,stroke:#22d3ee,color:#fff
 ```
 
 </div>
@@ -697,8 +699,8 @@ layout: center
 </div>
 
 <div class="p-5 rounded-xl bg-amber-500/10 border border-amber-500/30">
-  <div class="font-bold text-amber-300 mb-2">🎯 Fiabilité des LLM</div>
-  <div class="text-sm text-gray-400">Les LLM hallucinent. L'intégration exige de la précision. Validation, tests automatiques, dry-run obligatoire.</div>
+  <div class="font-bold text-amber-300 mb-2">🎯 Qualité du code généré</div>
+  <div class="text-sm text-gray-400">Prompts imprécis, descriptions MCP incomplètes, APIs obsolètes. Validation, tests automatiques et dry-run sont indispensables.</div>
 </div>
 
 <div class="p-5 rounded-xl bg-amber-500/10 border border-amber-500/30">
