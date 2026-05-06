@@ -704,6 +704,7 @@ graph TB
     AG -->|Exists?| INT
     INT -->|Yes| AG
     AG -->|Configures| WF
+    AG <-->|A2A| DEV
     INT -->|No| DEV
     DEV -->|How to code?| MCPI
     DEV -->|Low-level layer| MCPC
@@ -718,9 +719,8 @@ graph TB
 ```
 
 <!--
-- Full diagram: user → Configurator Agent → exists? → configures the workflow
-- If no → Coder Agent → internal MCP (conventions) + external MCP (Camel, others) for low-level
-- The agent creates the missing connector
+- MCP = agent ↔ tools, A2A (Google) = agent ↔ agent
+- The two protocols are complementary
 -->
 
 ---
@@ -782,8 +782,8 @@ layout: center
 </div>
 
 <div class="p-5 rounded-xl bg-amber-500/10 border border-amber-500/30">
-  <div class="font-bold text-amber-300 mb-2">🎯 Generated code quality</div>
-  <div class="text-sm text-gray-400">Imprecise prompts, incomplete MCP descriptions, outdated APIs. Validation, automated tests, and dry-runs are essential.</div>
+  <div class="font-bold text-amber-300 mb-2">🎯 Context engineering</div>
+  <div class="text-sm text-gray-400">Quality depends less on the prompt and more on the information architecture around the agent: MCP descriptions, accessible data, business context.</div>
 </div>
 
 <div class="p-5 rounded-xl bg-amber-500/10 border border-amber-500/30">
@@ -793,16 +793,16 @@ layout: center
 
 <div class="p-5 rounded-xl bg-amber-500/10 border border-amber-500/30">
   <div class="font-bold text-amber-300 mb-2">📏 Standardization</div>
-  <div class="text-sm text-gray-400">MCP is young. Agentic integration patterns still need to be defined and stabilized.</div>
+  <div class="text-sm text-gray-400">MCP has been under the Linux Foundation since late 2025. The protocol is maturing fast, but agentic integration patterns still need to stabilize.</div>
 </div>
 
 </div>
 
 <!--
 - Security: who authorizes the agent to connect to a prod system?
-- Quality: imprecise prompts, incomplete MCP descriptions, outdated APIs → validation + dry-run
+- Context engineering: quality depends on info architecture, not just the prompt
 - Human in the loop: autonomy with oversight
-- Standardization: MCP is still young, patterns to define
+- MCP under Linux Foundation, but agentic patterns still being defined
 -->
 
 ---
