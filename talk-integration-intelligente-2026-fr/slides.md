@@ -867,7 +867,8 @@ class: text-center
   <div><a href="https://zinebbendhiba.com">zinebbendhiba.com</a></div>
 </div>
 
-<div class="mt-8">
+<div class="mt-8 flex items-center justify-center gap-8">
+  <img src="/images/slides.png" class="w-32 rounded-lg" />
   <span class="px-4 py-2 rounded-lg bg-purple-500/20 border border-purple-500/40 text-sm text-purple-300">
     Questions ?
   </span>
