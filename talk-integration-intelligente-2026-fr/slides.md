@@ -30,6 +30,11 @@ mdc: true
   <span class="text-sm opacity-50">Zineb Bendhiba — 2026</span>
 </div>
 
+<!--
+- Intégration intelligente = flux de données autonomes grâce à l'IA agentique
+- De l'intégration classique vers l'intégration agentique
+-->
+
 ---
 transition: fade-out
 layout: two-cols
@@ -65,6 +70,13 @@ class: text-left
   <img src="/images/zineb-square.jpg" class="rounded-2xl w-64 shadow-xl" />
 </div>
 
+<!--
+- Principal SE @ IBM / Red Hat
+- PMC Apache Camel, maintainer Camel Quarkus
+- Contrib : Quarkus, Kaoto, Wanaku, Camel AI
+- Alumna Duchess France — contente d'être ici ce soir
+-->
+
 ---
 layout: center
 class: text-center
@@ -98,6 +110,13 @@ class: text-center
 <div class="mt-8 text-sm text-gray-500">
   Enterprise Integration Patterns — Apache Camel — ...
 </div>
+
+<!--
+- L'intégration ça marche, pas un problème à résoudre
+- Patterns éprouvés depuis 20 ans (EIP)
+- Messaging, transformation, routing, connecteurs
+- Frameworks comme Apache Camel implémentent tout ça
+-->
 
 ---
 layout: default
@@ -137,6 +156,12 @@ graph LR
 
 </v-click>
 
+<!--
+- Réception → Transformation → Validation → Routage → Livraison → Notification
+- Tout automatisé, prévisible, fiable
+- [click] Jusqu'à l'intervention humaine...
+-->
+
 ---
 layout: center
 ---
@@ -172,6 +197,12 @@ graph LR
 </div>
 
 </div>
+
+<!--
+- Bloc rouge = action humaine qui bloque le flux
+- Attente : minutes, heures, parfois jours
+- Souvent un travail répétitif que l'IA sait déjà faire
+-->
 
 ---
 layout: center
@@ -224,6 +255,12 @@ class: text-center
 
 </div>
 
+<!--
+- [clicks] 6 exemples de tâches humaines bloquantes
+- Validation PDF, analyse logs, classification, approbation, extraction, sentiment
+- Toutes cognitives mais répétitives = sweet spot de l'IA
+-->
+
 ---
 layout: center
 ---
@@ -264,6 +301,13 @@ graph LR
   </div>
 </div>
 
+<!--
+- Remplacer le goulot humain par un agent IA dans le flux
+- Minutes → secondes, disponible 24/7
+- Cas complexe → escalade humaine
+- L'IA gère le courant, l'humain gère l'exception
+-->
+
 ---
 layout: two-cols
 layoutClass: gap-8
@@ -302,25 +346,28 @@ layoutClass: gap-8
 <div class="mt-12">
 
 ```yaml
-# Route Camel avec agent IA
+# Route Camel + OpenAI structured output
 - route:
     from:
       uri: file:invoices/incoming
       steps:
-        - unmarshal:
-            mimeMultipart: {}
+        - setBody:
+            simple: "Analyse cette facture.
+              Vérifie montant, TVA,
+              correspondance bon de commande."
         - to:
-            uri: langchain4j-chat:invoice-agent
+            uri: openai:chat-completion
             parameters:
-              prompt: |
-                Analyse cette facture.
-                Vérifie : montant, TVA, 
-                correspondance bon de commande.
-                Retourne APPROVED ou 
-                NEEDS_REVIEW avec motif.
+              jsonSchema: >
+                resource:classpath:
+                invoice-decision.schema.json
+        - setVariable:
+            name: decision
+            jsonpath:
+              expression: $.approved
         - choice:
             when:
-              - simple: "${body} contains 'APPROVED'"
+              - simple: "${variable.decision}"
                 steps:
                   - to: sql:insert-approved
             otherwise:
@@ -329,6 +376,13 @@ layoutClass: gap-8
 ```
 
 </div>
+
+<!--
+- [click] Avant : 15 min/facture, humain ouvre chaque PDF
+- [click] Après : 5 sec/facture, agent IA dans route Camel
+- [click] L'IA libère l'humain pour les vraies décisions
+- À droite : exemple Camel YAML avec LangChain4j
+-->
 
 ---
 layout: center
@@ -340,6 +394,10 @@ class: text-center
 <div class="mt-6 text-xl text-gray-400 max-w-2xl mx-auto">
   Mais peut-elle aussi les <span class="text-purple-400 font-bold">créer</span> ?
 </div>
+
+<!--
+- Transition : on a vu raisonner → maintenant créer
+-->
 
 ---
 layout: center
@@ -377,6 +435,13 @@ layout: center
 
 </div>
 
+<!--
+- 3 étapes : Décrire → Chercher → Générer
+- L'utilisateur parle en langage naturel
+- L'agent explore le catalogue, trouve la bonne combinaison
+- Produit un workflow prêt à exécuter
+-->
+
 ---
 layout: two-cols
 layoutClass: gap-8
@@ -397,7 +462,7 @@ layoutClass: gap-8
 </div>
 
 <div class="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-  Génère une route Camel YAML valide
+  Génère une route Camel valide
 </div>
 
 <div class="p-2 rounded-lg bg-purple-500/10 border border-purple-500/20">
@@ -422,7 +487,7 @@ graph TD
     CS --> CAT[📚 Catalogue<br>300+ composants]
     CS --> DOC[📖 Documentation<br>& exemples]
     CS --> VAL[✅ Validation<br>des routes]
-    AI -->|Génère| R[📄 Route Camel<br>YAML valide]
+    AI -->|Génère| R[📄 Route Camel<br>valide]
     
     style AI fill:#4a1a6b,stroke:#8b5cf6,color:#fff
     style CS fill:#0a4a5b,stroke:#06b6d4,color:#fff
@@ -433,6 +498,15 @@ graph TD
 ```
 
 </div>
+
+<!--
+- MCP Server expose le catalogue Apache Camel (300+ composants)
+- [click] Interroge le catalogue en langage naturel
+- [click] Retourne composants, options, exemples
+- [click] Génère une route YAML valide
+- [click] Valide la route avant exécution — pas confiance aveugle
+- [click] Compatible Claude Code, Codex, Copilot, JetBrains AI, tout client MCP
+-->
 
 ---
 layout: center
@@ -445,6 +519,10 @@ class: text-center
   L'IA crée des workflows pour les <span class="text-cyan-400">développeurs</span>.<br><br>
   Et si elle pouvait aussi rendre les <span class="text-purple-400 font-bold">logiciels métier</span> extensibles par leurs utilisateurs ?
 </div>
+
+<!--
+- Transition : créer pour les devs → étendre pour les utilisateurs métier
+-->
 
 ---
 layout: default
@@ -494,6 +572,12 @@ layout: default
 
 </v-click>
 
+<!--
+- Gauche : ce que l'utilisateur voit (formulaire, approbation, email, dashboard)
+- Droite : ce qui tourne vraiment (HTTP, workflow engine, SMTP, REST/DB)
+- [click] Workflows figés, nouvelle intégration = dev custom = semaines
+-->
+
 ---
 layout: center
 ---
@@ -527,6 +611,12 @@ layout: center
 </div>
 
 </div>
+
+<!--
+- Agent Configurateur : utilisateur décrit en langage naturel → workflow configuré
+- Agent Développeur : intégration n'existe pas → l'agent la crée
+- Deux niveaux d'autonomie dans un même logiciel
+-->
 
 ---
 layout: two-cols
@@ -571,6 +661,12 @@ layoutClass: gap-8
 
 </div>
 
+<!--
+- Gauche : classique = ticket, backlog, dev, 3 semaines
+- [clicks] Droite : IA + MCP = décrit, identifie, configure, valide, quelques minutes
+- Changement de paradigme
+-->
+
 ---
 layout: center
 ---
@@ -604,6 +700,12 @@ graph TD
     MCP = Model Context Protocol — conçu pour les devs, utile pour tous
   </span>
 </div>
+
+<!--
+- Utilisateur parle en langage naturel → agent IA → connecteurs via MCP
+- Point clé : connecteur en pointillé = nouveau, généré par l'IA
+- Le logiciel s'étend de lui-même
+-->
 
 ---
 layout: center
@@ -647,6 +749,12 @@ graph TB
     style MCPX fill:#064a4b,stroke:#22d3ee,color:#fff
 ```
 
+<!--
+- Schéma complet : utilisateur → Agent Configurateur → existe ? → configure le workflow
+- Si non → Agent Codeur → MCP interne (conventions) + MCP externes (Camel, autres) pour le bas niveau
+- L'agent crée le connecteur manquant
+-->
+
 ---
 layout: center
 class: text-center
@@ -685,6 +793,13 @@ class: text-center
 
 </div>
 
+<!--
+- Niveau 1 Assisté : IA aide le dev (Camel MCP Server, dispo aujourd'hui)
+- Niveau 2 Délégué : IA remplace tâches humaines dans workflows existants
+- Niveau 3 Autonome : IA crée et étend les intégrations via MCP
+- On passe du 1 au 2, le 3 c'est la direction
+-->
+
 ---
 layout: center
 ---
@@ -715,6 +830,13 @@ layout: center
 
 </div>
 
+<!--
+- Sécurité : qui autorise l'agent à connecter un système prod ?
+- Qualité : prompts imprécis, descriptions MCP incomplètes, APIs obsolètes → validation + dry-run
+- Human in the loop : autonomie avec supervision
+- Standardisation : MCP encore jeune, patterns à définir
+-->
+
 ---
 layout: center
 class: text-center
@@ -727,15 +849,19 @@ class: text-center
 <v-clicks>
 
 <div class="px-6 py-3 rounded-xl bg-purple-500/15 border border-purple-500/30 inline-block">
-  Apache Camel + LangChain4j = agents qui raisonnent dans les workflows
+  Apache Camel + composants OpenAI / LangChain4j = IA dans vos workflows
+</div>
+
+<div class="px-6 py-3 rounded-xl bg-purple-500/15 border border-purple-500/30 inline-block">
+  Apache Camel comme pont entre vos process existants et des agents externes
 </div>
 
 <div class="px-6 py-3 rounded-xl bg-cyan-500/15 border border-cyan-500/30 inline-block">
-  MCP standardise le pont entre agents IA et systèmes
+  Camel MCP Server = l'IA crée et valide vos routes d'intégration
 </div>
 
 <div class="px-6 py-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 inline-block">
-  Kaoto rend la création de workflows visuelle et accessible
+  Kaoto Editor pour visualiser et éditer les routes générées
 </div>
 
 <div class="px-6 py-3 rounded-xl bg-amber-500/15 border border-amber-500/30 inline-block">
@@ -745,6 +871,13 @@ class: text-center
 </v-clicks>
 
 </div>
+
+<!--
+- [click] Camel + OpenAI / LangChain4j pour intégrer l'IA dans les workflows
+- [click] Camel MCP Server pour que l'IA crée et valide les routes
+- [click] Kaoto pour le visuel
+- [click] Tout open source
+-->
 
 ---
 layout: center
@@ -772,3 +905,8 @@ class: text-center
     Questions ?
   </span>
 </div>
+
+<!--
+- L'intégration n'est pas morte, elle devient intelligente et autonome
+- Questions ?
+-->
