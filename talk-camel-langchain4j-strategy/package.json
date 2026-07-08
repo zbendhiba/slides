@@ -1,0 +1,24 @@
+{
+  "name": "camel-langchain4j-strategy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "slidev --open",
+    "build": "slidev build",
+    "export": "slidev export"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@iconify-json/ri": "^1.2.10",
+    "@slidev/cli": "^52.15.1",
+    "@slidev/theme-default": "^0.25.0",
+    "@slidev/theme-seriph": "^0.25.0"
+  },
+  "devDependencies": {
+    "@slidev/types": "^52.15.1"
+  }
+}
