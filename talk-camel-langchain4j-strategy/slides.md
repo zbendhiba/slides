@@ -349,6 +349,7 @@ class: text-center
 
 <div class="mt-6">
   <img src="./public/images/n8n-agent.png" class="rounded-xl shadow-xl mx-auto max-h-72" />
+  <div class="text-xs text-center mt-1 opacity-40">Source: <a href="https://n8n.io/" target="_blank">https://n8n.io/</a></div>
 </div>
 
 <div class="mt-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 max-w-2xl mx-auto text-sm">
@@ -377,7 +378,7 @@ layout: default
 
 <div class="mt-6">
 
-```mermaid {scale: 0.65}
+```mermaid {scale: 0.55}
 graph LR
     K[Kaoto<br>visual editor] -->|properties| F[Forage<br>config layer]
     F -->|generates| CM[Chat Models<br>10 providers]
@@ -399,11 +400,6 @@ graph LR
 
 </div>
 
-<div class="mt-6 p-4 rounded-xl bg-green-500/10 border border-green-500/30">
-
-Forage has grown significantly: **10 LLM providers**, **11 vector DBs**, **3 memory stores**, **8 guardrails**, basic RAG, multi-agent routing, and Quarkus + Spring Boot starters. Currently in production-hardening phase.
-
-</div>
 
 <!--
 - Forage has expanded way beyond the initial LLM-only scope
@@ -507,6 +503,163 @@ layout: default
 - Quarkus LangChain4j has 4 areas neither Camel nor Forage touch: MCP, security, observability, agentic
 - Embedding model gap in Forage is significant: only Ollama vs 10 providers in Quarkus
 - Forage leads on memory (3 vs 2 stores) but that's a small win
+-->
+
+---
+layout: default
+---
+
+# What Forage does today
+
+<div class="mt-4 text-gray-400">
+  The configuration layer that powers <code>camel-langchain4j-agent</code>. Takes properties from Kaoto / Camel config and creates the LangChain4j beans the agent component needs.
+</div>
+
+<div class="mt-4">
+
+```mermaid {scale: 0.5}
+graph LR
+    K[Kaoto / Camel config] -->|properties| F[Forage]
+    F -->|creates| CM[ChatModel]
+    F -->|creates| MEM[ChatMemoryProvider]
+    F -->|creates| ES[EmbeddingStore]
+    F -->|creates| RA[RetrievalAugmentor]
+    F -->|creates| GR[Guardrails]
+    CM --> AGENT[camel-langchain4j-agent<br>builds the AI Service]
+    MEM --> AGENT
+    ES --> AGENT
+    RA --> AGENT
+    GR --> AGENT
+    AGENT --> ROUTE[Camel Route]
+
+    style K fill:#4a1a6b,stroke:#8b5cf6,color:#fff
+    style F fill:#1a3a5b,stroke:#06b6d4,color:#fff
+    style AGENT fill:#064a4b,stroke:#22d3ee,color:#fff
+    style ROUTE fill:#064a1b,stroke:#22d3ee,color:#fff
+    style CM fill:#2a2a4a,stroke:#666,color:#ccc
+    style MEM fill:#2a2a4a,stroke:#666,color:#ccc
+    style ES fill:#2a2a4a,stroke:#666,color:#ccc
+    style RA fill:#2a2a4a,stroke:#666,color:#ccc
+    style GR fill:#2a2a4a,stroke:#666,color:#ccc
+```
+
+</div>
+
+<div class="mt-2 grid grid-cols-3 gap-3" style="font-size: 0.75em;">
+
+<div class="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30">
+  <div class="font-bold text-cyan-400">Chat Models</div>
+  <div>11 providers</div>
+</div>
+
+<div class="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30">
+  <div class="font-bold text-cyan-400">Vector Stores</div>
+  <div>11 stores</div>
+</div>
+
+<div class="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30">
+  <div class="font-bold text-cyan-400">Memory</div>
+  <div>3 stores</div>
+</div>
+
+<div class="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30">
+  <div class="font-bold text-cyan-400">Guardrails</div>
+  <div>5 input + 4 output</div>
+</div>
+
+<div class="p-2 rounded-xl bg-amber-500/10 border border-amber-500/30">
+  <div class="font-bold text-amber-400">Embedding Models</div>
+  <div>1 (Ollama only)</div>
+</div>
+
+<div class="p-2 rounded-xl bg-red-500/10 border border-red-500/30">
+  <div class="font-bold text-red-400">Not in Forage</div>
+  <div>Streaming, observability, image/audio</div>
+</div>
+
+</div>
+
+<!--
+- Forage is NOT a standalone framework — it exists to serve camel-langchain4j-agent
+- The Camel agent component is what builds the AI Service, dispatches tools, runs the route
+- Forage's job: take properties → create the LangChain4j objects the agent needs
+- Same SPI pattern repeated 8 times: ModelProvider, EmbeddingModelProvider, EmbeddingStoreProvider,
+  ChatMemoryBeanProvider, RetrievalAugmentorProvider, WebSearchEngineProvider, InputGuardrailProvider, OutputGuardrailProvider
+-->
+
+---
+layout: default
+---
+
+# Camel + Forage vs Quarkus LangChain4j <span class="text-sm opacity-40">— Architecture & Lifecycle</span>
+
+<div class="mt-4" style="font-size: 0.75em;">
+
+| | Camel + Forage | Quarkus LangChain4j |
+|---|---|---|
+| **Discovery** | Java `ServiceLoader` (runtime) | Build-time extensions (`@BuildStep`) |
+| **Config** | Env vars → sysprops → .properties → defaults (string parsing) | `@ConfigMapping` type-safe interfaces, build-time validated |
+| **Bean creation** | Forage creates beans, Camel agent wires the AI Service | CDI synthetic beans, `@RegisterAiService` declarative wiring |
+| **Bean lifecycle** | No lifecycle — who closes the Redis connection? | `@RequestScoped`, CDI manages creation + cleanup |
+| **Multi-model** | Prefix convention (`google.agent.model.kind=...`) | `@ModelName("x")` CDI qualifier, build-time validated |
+| **Custom extensions** | Pass to `camel-langchain4j-agent` (not straightforward, no DI) | Write a CDI bean — auto-discovered, `@Inject` any service |
+| **Guardrail ownership** | Maintained in Forage/Camel — generic AI code, could live in LangChain4j | CDI-native, users write their own |
+| **Native compilation** | Not tested | Runtime/deployment split, native CI |
+| **Maintenance** | 38 provider modules across 8 SPIs to keep in sync with LangChain4j | Co-maintained by a LangChain4j core contributor |
+
+</div>
+
+<div class="mt-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-sm">
+
+Forage solves the configuration problem that `camel-langchain4j-agent` has — but with plain Java mechanisms. No DI, no lifecycle, no build-time validation. Every LangChain4j version bump = verify 38 modules.
+
+</div>
+
+<!--
+- Forage is the best answer available without a framework — it automates what would be manual Java bean creation
+- But plain Java means: no DI in guardrails/extensions, no lifecycle management, runtime errors for bad config
+- Quarkus solves all of this with framework-level tools (CDI, ConfigMapping, build-time validation)
+- Maintenance: Forage has 38 provider modules. Quarkus LangChain4j has similar count but with Dmytro co-maintaining
+- The guardrails in Forage (PII, prompt injection, etc.) are generic AI guardrails — not Camel-specific
+-->
+
+---
+layout: default
+---
+
+# Camel + Forage vs Quarkus LangChain4j <span class="text-sm opacity-40">— Feature Coverage</span>
+
+<div class="mt-4" style="font-size: 0.75em;">
+
+| | Camel + Forage | Quarkus LangChain4j |
+|---|---|---|
+| **Chat models** | 11 providers, synchronous only | 13+ providers, full streaming + `@OnThinking` |
+| **Embedding models** | Ollama only | All remote providers + 10 local ONNX (offline, no API key) |
+| **Vector stores** | 11 — wraps LangChain4j standalone clients | 12+ — reuses production Quarkus extensions (quarkus-redis, quarkus-hibernate, etc.) |
+| **Memory** | 3 stores (in-memory, Redis, Infinispan) | 3 stores + `@MemoryId`, `@SeedMemory`, flush strategies, `@ChatScoped` |
+| **RAG** | Basic retriever (max results + min score), no doc loading | Easy RAG: auto-ingestion, embedding caching, ingestion strategies |
+| **Tools** | `ai-tool:` — any Camel route as LLM tool (Camel's strength) | `@Tool` + `@ToolBox` + hallucination detection + error handlers |
+| **MCP** | ✅ In `camel-langchain4j-agent` | ✅ `@McpToolBox` + OIDC auth + health checks + tracing |
+| **Observability** | ⚠️ Planned (Camel has its own infra) | ✅ Micrometer + OpenTelemetry + guardrail metrics + Dev UI |
+| **Dev services** | None | Auto-start Ollama, auto-pull models |
+| **Structured output** | None | `{response_schema}` — auto JSON schema |
+| **Image / Audio** | None | `ImageModel`, `AudioTranscriptionModel`, `@Moderate` |
+
+</div>
+
+<div class="mt-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-sm">
+
+**Camel's unique value**: `ai-tool:` — 300+ connectors as LLM tools. This works in both approaches.
+**Key gaps**: streaming, embedding model diversity, vector stores on standalone clients vs production extensions, dev services.
+
+</div>
+
+<!--
+- Streaming: users expect token-by-token output. Camel+Forage can't do it.
+- Embedding models: 11 vector stores but only 1 embedding provider — bottleneck is embeddings, not storage
+- Vector stores: Forage creates new connections. Quarkus reuses existing DB extensions (one pool, one config)
+- ai-tool: is the differentiator — in the Quarkus-native future, routes become @Tool CDI beans
+- Open question: will QL4J observability integrate cleanly with Camel's own tracing/metrics?
 -->
 
 ---
