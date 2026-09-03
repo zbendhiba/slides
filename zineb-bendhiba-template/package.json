@@ -1,0 +1,17 @@
+{
+  "name": "TALK_NAME",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "slidev --open",
+    "build": "slidev build",
+    "export": "slidev export"
+  },
+  "dependencies": {
+    "@iconify-json/ri": "^1.2.10",
+    "@slidev/cli": "^52.15.1",
+    "@slidev/theme-default": "^0.25.0"
+  },
+  "devDependencies": {
+    "@slidev/types": "^52.15.1"
+  }
+}

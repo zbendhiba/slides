@@ -1,0 +1,197 @@
+/* ================================================================
+   Zineb Bendhiba — Signature Slide Theme
+   White + violet (#5b3ea6) + terminal blocks
+   ================================================================ */
+
+:root {
+  --zb: #5b3ea6;
+  --zb-light: #7c5fc7;
+  --zb-dark: #4a3290;
+  --zb-soft: rgba(91, 62, 166, 0.08);
+  --zb-text: #1f2937;
+  --zb-muted: #6b7280;
+  --zb-terminal: #1e293b;
+}
+
+/* ===== Base ===== */
+
+.slidev-layout {
+  background: #fff !important;
+  color: var(--zb-text) !important;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* ===== Typography ===== */
+
+.slidev-layout h1 {
+  color: var(--zb-text) !important;
+  font-weight: 300 !important;
+  letter-spacing: -0.02em;
+}
+
+.slidev-layout h2,
+.slidev-layout h3 {
+  color: var(--zb) !important;
+  font-weight: 600 !important;
+}
+
+.slidev-layout strong {
+  color: var(--zb);
+  font-weight: 700;
+}
+
+.slidev-layout a,
+.slidev-layout a:visited {
+  color: var(--zb) !important;
+}
+
+.slidev-layout a:hover {
+  color: var(--zb-dark) !important;
+}
+
+/* ===== Aside — key takeaway block ===== */
+
+.zb-aside {
+  border-left: 3px solid var(--zb);
+  padding: 0.6rem 1rem;
+  color: var(--zb-muted);
+  line-height: 1.6;
+}
+
+.zb-aside strong,
+.zb-aside code {
+  color: var(--zb);
+}
+
+/* ===== Code blocks — also terminal style ===== */
+
+.slidev-layout pre,
+.slidev-layout .slidev-code {
+  background: var(--zb-terminal) !important;
+  color: #e2e8f0 !important;
+  border-radius: 0.75rem;
+  position: relative;
+  padding-top: 2.2rem !important;
+}
+
+.slidev-layout pre::before {
+  content: "● ● ●";
+  display: block;
+  position: absolute;
+  top: 0.8rem;
+  left: 1.2rem;
+  font-size: 0.55rem;
+  letter-spacing: 0.35em;
+  background: linear-gradient(90deg,
+    #ff5f57 0%, #ff5f57 20%, transparent 20%,
+    transparent 35%, #febc2e 35%, #febc2e 55%, transparent 55%,
+    transparent 70%, #28c840 70%, #28c840 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.slidev-layout :not(pre) > code {
+  background: var(--zb-soft) !important;
+  color: var(--zb) !important;
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.3rem;
+  font-size: 0.88em;
+}
+
+/* ===== Tables ===== */
+
+.slidev-layout table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.slidev-layout thead th {
+  background: transparent !important;
+  color: var(--zb) !important;
+  border-bottom: 2px solid var(--zb) !important;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.85em;
+}
+
+.slidev-layout td {
+  border-bottom: 1px solid #e5e7eb !important;
+  padding: 0.4rem 0.75rem;
+  color: var(--zb-text);
+  font-size: 0.85em;
+}
+
+.slidev-layout tr:hover td {
+  background: var(--zb-soft);
+}
+
+/* ===== Section divider slides ===== */
+
+.zb-divider {
+  background: var(--zb) !important;
+  color: #fff !important;
+}
+
+.zb-divider h1 {
+  color: #fff !important;
+  font-weight: 400 !important;
+  font-size: 2.5rem !important;
+}
+
+.zb-divider::before {
+  display: none !important;
+}
+
+/* ===== Muted text ===== */
+
+.zb-muted {
+  color: var(--zb-muted);
+}
+
+/* ===== Thin top accent bar ===== */
+
+.slidev-layout::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--zb);
+}
+
+/* No bar on divider slides or title */
+.zb-divider::before,
+.slidev-page-1 .slidev-layout::before {
+  display: none !important;
+}
+
+/* ===== Title slide ===== */
+
+.slidev-page-1 .slidev-layout {
+  border-top: 4px solid var(--zb);
+}
+
+/* ===== Slide number ===== */
+
+.slidev-page-number {
+  color: var(--zb-muted) !important;
+}
+
+/* ===== Progress bar ===== */
+
+.slidev-progress-bar {
+  background: var(--zb) !important;
+}
+
+/* ===== Lists ===== */
+
+.slidev-layout li {
+  margin-bottom: 0.3em;
+}
+
+.slidev-layout li::marker {
+  color: var(--zb);
+}
