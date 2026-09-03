@@ -348,7 +348,7 @@ class: text-center
 </div>
 
 <div class="mt-6">
-  <img src="./public/images/n8n-agent.png" class="rounded-xl shadow-xl mx-auto max-h-72" />
+  <img src="./public/images/n8n-agent.png" class="rounded-xl shadow-xl mx-auto max-h-52" />
   <div class="text-xs text-center mt-1 opacity-40">Source: <a href="https://n8n.io/" target="_blank">https://n8n.io/</a></div>
 </div>
 
